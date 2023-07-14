@@ -2,21 +2,34 @@
 <html>
     <head>
         <title>Hack Planner App</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
-        <h1> Hack Planner </h1>
-        <ul>
-            {% for item in items %}
-            <li>
-                {{ item }}
-                <a href="/edit/{{loop.index}}">Edit</a>
-                <a href="/edit/{{loop.index}}">Delete</a>
-            </li>
-            {% endfor %}
-        </ul>
-        <form action="/add" method="post">
-            <input type="text" name="item" placeholder="Enter item">
-            <button type="Submit">Add</button>
-        </form>
+        <div class="container">
+            <h1> Hack Planner </h1>
+            <ul class="checklist-items">
+                {% for item in items %}
+                <li>
+                    {{ item }}
+                    <a href="/edit/{{ item[0] }}">Edit</a>
+                    <a href="/delete/{{ item[0] }}">Delete</a>
+                    <button onclick="setReminder('{{ item[1] }}')">Remind</button>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            <form class="add-form" action="/add" method="post">
+                <input type="text" name="item" placeholder="Enter item">
+                <button type="Submit">Add</button>
+            </form>
+        </div>
+
+        <script>
+            function setReminder(item) {
+                setTimeout(function() {
+                    var reminder = confirm("Reminder: " + item);
+                }, 5 * 1000);
+            }
+        </script>
     </body>
 </html>
