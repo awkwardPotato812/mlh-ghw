@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
+import Task from './Task';
 import Column from './Column';
 
 function KanbanBoard() {
@@ -8,8 +9,8 @@ function KanbanBoard() {
     //const [completed, setCompleted] = useState([]);
 
     return (
-        <DragDropContext>
-            <h2 style={{textAlign: "center" }} >Task Board</h2>
+        <div>
+            <h1 style={{textAlign: "center", color: '#cdd6f4' }} > Task Board</h1>
             <div
                 style={{
                     display: "flex",
@@ -18,9 +19,13 @@ function KanbanBoard() {
                     flexDirection: "row"
                 }}
             >
-                <Column id={"1"} title={"Inbox"} />
+                <Task taskTitle='Task 1' taskDetails='Dummy details' createDate='today' deadline='tomorrow' />
+                <Column title='Inbox' /> 
+                <Column title='In Progress' />
+            <Column title='Done' />
             </div>
-        </DragDropContext>
+        </div>
+        
     )
 }
 

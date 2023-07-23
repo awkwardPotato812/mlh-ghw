@@ -1,19 +1,26 @@
 import React from 'react';
-import { styled } from 'styled-components';
+import { Router, Route } from '@reach/router';
 
-import TaskBar from './components/TaskBar';
+import AddTaskPage from './AddTaskPage';
+import LandingPage from './LandingPage';
 
 
-function App() {
-  const bgColor = '#ffffff';
+const NotFound = () => {
+  <center>
+    <h1>Sorry, nothing found!</h1>
+  </center>
+};
+
+const App = () => {
   return(
-    <div style={{ display: "flex", height: "100vh", backgroundColor: {bgColor} }}>
-        <TaskBar defaultBgColor={bgColor} style={{ flex: 1}}/>
-      <div style={{ flex: 9}}>
-
-      </div>
+    <div>
+      <Router>
+        <LandingPage path="/" />
+        <AddTaskPage path="/add" />
+        <NotFound default />
+      </Router>
     </div>
   );
-}
+};
 
 export default App;
