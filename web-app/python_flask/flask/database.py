@@ -23,13 +23,15 @@ class HackPlannerAppDB:
         """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS tasks (
+        cursor.execute('''
+                       CREATE TABLE IF NOT EXISTS tasks (
                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
                        TaskName TEXT,
-                       TaskDetails TEXT,
-                       CreateDate DATE,
+                       Tags TEXT,
                        Deadline DATE,
-                       Status ENUM('INBOX', 'INPROGRESS', 'DONE', 'ARCHIVED'))''')
+                       Status TEXT CHECK( Status IN ('INBOX', 'INPROGRESS', 'DONE', 'ARCHIVED'))
+                       );
+                       ''')
         conn.commit()
         conn.close()
     
@@ -41,39 +43,52 @@ class HackPlannerAppDB:
         """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM tasks")
-        tasks = cursor.fetchall()
+        cursor.execute("SELECT * FROM tasks WHERE Status <> 'ARCHIVED' ")
+        tasks_records = cursor.fetchall()
+        tasks = [{ 
+                    'id': record[0],
+                    'taskName': record[1],
+                    'tags': record[2],
+                    'deadline': str(record[3]),
+                    'status': str(record[4])
+                } for record in tasks_records]
         conn.close()
         return tasks
     
-    def add_task(self, taskName, createDate, taskDetails=None, deadline=None, status="INBOX"):
+    def add_task(self, taskName, tags=None, deadline=None, status="INBOX"):
         """Adds a new task entry in the Task database
 
         Args:
             taskName: Name or title of the task as `str`
-            createDate: Date-time of when the task was created as `str`
-            taskDetail: Any notes related to the task. This field is optional
+            tags: Any tags related to the task. This field is optional
             deadline: Date-time of when the task is due, as `str`
             status: Current status of the task. By default all tasks are placed in the `INBOX` bucket.
 
         """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO tasks (TaskName, TaskDetails, CreateDate, Deadline, Status) VALUES (?)",
-                       (taskName, taskDetails, createDate, deadline, status,))
+        cursor.execute("INSERT INTO tasks (TaskName, Tags, Deadline, Status) VALUES (?, ?, ?, ?);",
+                       (taskName, tags, deadline, status,))
         conn.commit()
         conn.close()
 
-"""
-    Update to be figured out at the end!
-    def update_task(self,item_id, taskName, createDate, taskDetails, deadline, status):
+    def edit_task(self, id, taskName, tags, deadline, status):
+        """ Updates an existing task entry in the database based on the given id
+
+        Args:
+            id: Unique identifier for the task as `str`
+            taskName: Name or title of the task as `str`
+            tags: Any tags related to the task.
+            deadline: Date-time of when the task is due, as `str`
+            status: Current status of the task.
+        """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute("UPDATE tasks SET item = ? WHERE id = ?", (new_item, item_id))
+        cursor.execute("UPDATE tasks SET TaskName = ? Tags = ? Deadline = ? Status = ? WHERE ID = ? ;",
+                       (taskName, tags, deadline, status, id, ))
         conn.commit()
         conn.close()
-"""
-    
+
     def delete_task(self,task_id):
         """ Removes an existing task entry in the database
 
@@ -82,21 +97,28 @@ class HackPlannerAppDB:
         """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM tasks where id = ?", (task_id))
+        cursor.execute("DELETE FROM tasks where ID = ?", (task_id))
         conn.commit()
         conn.close()
     
-    def archive_task(self,task_id):
-        """ Archives an existing task entry in the database
+    def get_archived_tasks(self):
+        """ Retrieves archived task entries from the database
 
-        Args:
-            task_id: Unique identifier for the task as `str`
+        Returns:
+            A `list` of all records in the database which are archived.
         """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute("UPDATE tasks SET STATUS = ? WHERE id = ?", ("ARCHIVED", task_id))
+        cursor.execute("SELECT * FROM tasks WHERE Status = 'ARCHIVED' ;")
         conn.commit()
+        tasks_records = cursor.fetchall()
+        tasks = [{ 
+                    'id': record[0],
+                    'taskName': record[1],
+                    'tags': record[2],
+                    'deadline': str(record[3]),
+                    'status': str(record[4])
+                } for record in tasks_records]
+        
         conn.close()
-
-
-
+        return tasks

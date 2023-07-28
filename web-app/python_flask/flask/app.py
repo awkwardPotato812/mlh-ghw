@@ -1,40 +1,86 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, jsonify, make_response
+from flask_cors import CORS
+import json
+import sqlite3
+
 from database import HackPlannerAppDB
 
-# Creating an instance of flask app
+# Create an instance of flask app and enable CORS
 app = Flask(__name__)
+CORS(app)
 
 # Global DB instance.
 db = HackPlannerAppDB("./", "planner_app.db")
 
+@app.route('/')
+def get_tasks():
+    try :
+        db.connect()
+        tasks = db.get_tasks()
+    except sqlite3.Error as error:
+        return make_response('500', 'Internal Server error')
+    
+
+    response = {
+        'inbox': [],
+        'inProgress': [],
+        'completed': []
+    }
+    for task in tasks:
+        if task['status'] == 'INBOX':
+            response['inbox'].append(task)
+        elif task['status'] == 'INPROGRESS':
+            response['inProgress'].append(task)
+        else:
+            response['completed'].append(task)
+    
+    return jsonify(response)
+
+
 @app.route('/add', methods=['POST'])
 def add_item():
-    item = request.form['item']
-    db.add_item(item)
-    return redirect('/')
+    task = request.get_json(silent=True)
+    if task is not None:
+        try:
+            db.add_task(taskName=task['taskName'], tags=task['tags'],
+                    deadline=task['deadline'], status=task['status'])
+        except sqlite3.Error as error:
+            return make_response('500', 'Internal Server error')
+        
+        return make_response('OK', 200)
 
-@app.route('/edit/<int:item_id>', methods=['GET', 'POST'])
-def edit_item(item_id):
-    if request.method == 'POST':
-        new_item = request.form['item']
-        db.update_item(item_id, new_item)
-        return redirect('/')
-    else:
-        items = db.get_items()
-        item = next((x[1] for x in items if x[0] == item_id), None)
-        return render_template("edit.html", item=item, item_id=item_id)
 
-@app.route('/delete/<int:item_id>')
-def delete_item(item_id):
-    db.delete_item(item_id)
-    return redirect('/')
+@app.route('/edit/<int:task_id>', methods=['POST'])
+def edit_task(task_id):
+    task = request.get_json(silent=True)
+    if task is not None:
+        try:
+            db.edit_task(id=str(task_id), taskName=task['taskName'], tags=task['tags'],
+                    deadline=task['deadline'], status=task['status'])
+        except sqlite3.Error as error:
+            return make_response('500', 'Internal Server error')
+        
+        return make_response('OK', 200)
 
-@app.route('/')
-def checklist():
-    db.connect()
-    items = db.get_items()
-    return render_template('checklist.html', items=items)
 
+@app.route('/delete/<int:task_id>')
+def delete_tasks(task_id):
+    try:
+        db.delete_task(str(task_id))
+    except sqlite3.Error as error:
+        return make_response('500', 'Internal Server error')
+    
+    return make_response('OK', 200)
+
+
+@app.rout('/archived')
+def get_archived_tasks():
+    try:
+        archvd__tasks = db.get_archived_tasks()
+    except sqlite3.Error as error:
+        return make_response('500', 'Internal Server error')
+    
+    return jsonify(archvd__tasks)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
