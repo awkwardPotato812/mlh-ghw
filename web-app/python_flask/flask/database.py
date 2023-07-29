@@ -28,7 +28,7 @@ class HackPlannerAppDB:
                        ID INTEGER PRIMARY KEY AUTOINCREMENT,
                        TaskName TEXT,
                        Tags TEXT,
-                       Deadline DATE,
+                       Deadline TEXT,
                        Status TEXT CHECK( Status IN ('INBOX', 'INPROGRESS', 'DONE', 'ARCHIVED'))
                        );
                        ''')
@@ -43,8 +43,9 @@ class HackPlannerAppDB:
         """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM tasks WHERE Status <> 'ARCHIVED' ")
+        cursor.execute("SELECT * FROM tasks WHERE Status <> 'ARCHIVED' ;")
         tasks_records = cursor.fetchall()
+        conn.commit()
         tasks = [{ 
                     'id': record[0],
                     'taskName': record[1],
@@ -67,7 +68,7 @@ class HackPlannerAppDB:
         """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO tasks (TaskName, Tags, Deadline, Status) VALUES (?, ?, ?, ?);",
+        cursor.execute("INSERT INTO tasks (TaskName, Tags, Deadline, Status) VALUES (?, ?, ?, ?) ;",
                        (taskName, tags, deadline, status,))
         conn.commit()
         conn.close()
@@ -84,7 +85,7 @@ class HackPlannerAppDB:
         """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute("UPDATE tasks SET TaskName = ? Tags = ? Deadline = ? Status = ? WHERE ID = ? ;",
+        cursor.execute("UPDATE tasks SET TaskName = ?, Tags = ?, Deadline = ?, Status = ? WHERE ID = ? ;",
                        (taskName, tags, deadline, status, id, ))
         conn.commit()
         conn.close()
@@ -93,11 +94,11 @@ class HackPlannerAppDB:
         """ Removes an existing task entry in the database
 
         Args:
-            task_id: Unique identifier for the task as `str`
+            task_id: Unique identifier for the task
         """
         conn = sqlite3.connect(self.db_path + "/" + self.db_name)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM tasks where ID = ?", (task_id))
+        cursor.execute("DELETE FROM tasks where ID = ? ;", (task_id,))
         conn.commit()
         conn.close()
     
