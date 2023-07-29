@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from '@reach/router';
 
 
-function TaskBar(props) {
+function TaskBar( props ) {
     const linkStyles = {
         backgroundColor: '#7f849c',
         color: '#1e1e2e',
@@ -23,40 +23,41 @@ function TaskBar(props) {
         boxShadow: '0 0 2px rgba(0, 0, 0, 0.5)'
     };
 
-    const handleMouseOver = (event) => {
-        Object.assign(event.target.style, hoverStyles);
+    const handleMouseOver = ( event ) => {
+        Object.assign( event.target.style, hoverStyles );
     };
     
-    const handleMouseOut = (event) => {
-        Object.assign(event.target.style, linkStyles);
+    const handleMouseOut = ( event ) => {
+        Object.assign( event.target.style, linkStyles );
     };
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [bgColor, setBgColor] = useState(props.defaultBgColor);
+    const [ isOpen, setIsOpen ] = useState( false );
+    const [ bgColor, setBgColor ] = useState( props.defaultBgColor );
     const handleClick= () => {
-        setIsOpen(!isOpen);
-        if(!isOpen) {
-            setBgColor("#11111b");
+        setIsOpen( !isOpen );
+        if( !isOpen ) {
+            setBgColor( "#11111b" );
         } else {
-            setBgColor(props.defaultBgColor);
+            setBgColor( props.defaultBgColor );
         }
         
     };
 
     return (
-        <div className='task-bar' style={{ backgroundColor: bgColor}} >
+        <div className='task-bar' style={{ backgroundColor: bgColor }} >
             <div className='task-bar-title' style={{ display: 'flex', padding: '5px' }}>
-                <button onClick={handleClick}>
-                    <img alt='Clipboard' src={process.env.PUBLIC_URL + 'favicon.ico'} />
+                <button onClick={ handleClick } style={{ backgroundColor: '#cdd6f4' }}>
+                    <img alt='Menu' src={ process.env.PUBLIC_URL + 'icons8-menu-32.png' } />
                 </button>
                 <h2 style={{ color: '#cdd6f4', margin: '5px' }}>Task Bar</h2>
             </div>
-            {isOpen && <div className='task-menu' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Link to="/add" style={linkStyles} onMouseOver={handleMouseOver} 
-                        onMouseOut={handleMouseOut}>Add Task</Link>
-                <Link style={linkStyles} onMouseOver={handleMouseOver}
-                    onMouseOut={handleMouseOut} to="/archived" >Archived Task</Link>
-            </div> }
+            { isOpen && <div className='task-menu' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <Link to="/add" style={ linkStyles } onMouseOver={ handleMouseOver } 
+                        onMouseOut={ handleMouseOut }>Add Task</Link>
+                <Link style={ linkStyles } onMouseOver={ handleMouseOver }
+                    onMouseOut={ handleMouseOut } to="/archived" >Archived Task</Link>
+            </div> 
+            }
         </div>
     );
 }

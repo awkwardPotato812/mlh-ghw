@@ -1,42 +1,74 @@
 import React, { useState } from 'react';
+import { navigate } from '@reach/router';
+import axios from 'axios';
 
-function Task({ taskTitle, taskDetails, createDate, deadline }) {
-    const contentStyles = {
-        overflowWrap: 'break-word',
-        color: '#232634',
-        padding: '5px',
-    };
-    
-    const h3Styles = {
-        color: '#232634'
-    };
+import './task.css';
 
+
+function Task({ id, taskTitle, tags, deadline, cardColor, status }) {
     const compatCardStyles = {
         width: '300px',
+        margin: '75px',
         borderRadius: "5px",
-        backgroundColor: "#838ba7",
+        padding: '5px',
+        backgroundColor: cardColor,
         display: 'flex',
         flexDirection: 'column',
+        boxShadow: '2px 2px 4px rgba(131, 139, 167, 0.6)'
     };
 
-    const expandedCardStyles = {
-
+    const handleDeleteClick = () => {
+        const deleteTask = async() => {
+            const response = await axios.get( 'http://localhost:5000/delete/' + id );
+            if ( response.status === 200 ) {
+                console.debug( "Delete action succeeded" );
+                window.location.reload();
+            }
+            else if ( response.status === 500 ) {
+                console.error( "Delete action failed due to internal server error" );
+                navigate( `/interalerror` );
+            } else {
+                console.error( "Delete action failed due to other error: " + response.status );
+                navigate( `/notfound` );
+            }
+        }
+        deleteTask();
     };
 
-    const [isExpanded, setExpanded] = useState(false);
-    const handleClick = () => {
-        setExpanded(!isExpanded)
-    }
+    const handleEditClick = () => {
+        navigate( `/edit`, { state: {
+                taskName: taskTitle,
+                tags: tags,
+                deadline: deadline,
+                status: status,
+                id: id,
+            } 
+        } );
+    };
+
+    const [ isExpanded, setExpanded ] = useState( false );
+
     return (
-        <div className="task-card">
-            {!isExpanded && <div className='card-content' 
-                style={compatCardStyles}>
-                <div style={{ borderRadius: '10px', backgroundColor: '#a5adce' }}>
-                    <h2 style={contentStyles} >{taskTitle}</h2>
-                    <hr style={{ color: '#232634', borderWidth: '1px' }} />
-                    <h3 style={contentStyles} > Due on: {deadline}</h3>
+        <div>
+            {!isExpanded && <div className="task-card-compact" style={ compatCardStyles }>
+                <div className='card-header-compact'>
+                    <h2>{ taskTitle }</h2>
                 </div>
-                <p>{createDate}</p>
+                <div className='card-body-compact'>
+                    <div className='card-section-compact'>
+                        <h3> Due on: { deadline }</h3>
+                    </div>
+                </div>
+                <div className='card-footer-compact'>
+                    <span className="buttons">
+                        <button className='icon-button' onClick={ handleEditClick }>
+                            <img src={ process.env.PUBLIC_URL + 'icons8-edit-16.png' } />
+                        </button>
+                        <button className='icon-button' onClick={ handleDeleteClick }>
+                            <img src={ process.env.PUBLIC_URL + 'icons8-delete-16.png' } />
+                        </button>
+                    </span>
+                </div>
             </div>
             }
         </div>

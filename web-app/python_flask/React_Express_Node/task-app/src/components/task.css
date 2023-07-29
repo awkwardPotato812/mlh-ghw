@@ -1,0 +1,25 @@
+.card-header-compact {
+    border-bottom: 1px solid #1e1e2e;
+    padding: 2px;
+    font-size: 18px;
+    overflow-wrap: break-word;
+    color: #1e1e2e;
+}
+
+.card-body-compact {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #1e1e2e;
+    border-bottom: 1px solid #1e1e2e;
+}
+.buttons {
+    float: right;
+}
+.icon-button {
+    background-color: transparent;
+    border: none;
+}
+
+.icon-button:hover {
+    transform: translateY(2px);
+}
