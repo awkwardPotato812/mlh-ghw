@@ -5,6 +5,7 @@ import KanbanBoard from './components/KanbanBoard';
 import TaskBar from './components/TaskBar';
 import AddTaskForm from './components/AddTaskForm';
 import EditTaskForm from './components/EditTaskForm';
+import ArchivedTasks from './components/ArchivedTasks';
 
 
 const DefaultError = () => {
@@ -32,6 +33,7 @@ const App = () => {
         <KanbanBoard path="/" />
         <AddTaskForm path="/add" />
         <EditTaskForm path="/edit" />
+        <ArchivedTasks path="/archived" />
         <InternalError path="/internalerror" />
         <DefaultError default />
       </Router>

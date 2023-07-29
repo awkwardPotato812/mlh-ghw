@@ -17,6 +17,8 @@ function Task({ id, taskTitle, tags, deadline, cardColor, status }) {
         boxShadow: '2px 2px 4px rgba(131, 139, 167, 0.6)'
     };
 
+    const isArchived = status === 'ARCHIVED';
+
     const handleDeleteClick = () => {
         const deleteTask = async() => {
             const response = await axios.get( 'http://localhost:5000/delete/' + id );
@@ -60,7 +62,7 @@ function Task({ id, taskTitle, tags, deadline, cardColor, status }) {
                     </div>
                 </div>
                 <div className='card-footer-compact'>
-                    <span className="buttons">
+                    { !isArchived && <span className="buttons">
                         <button className='icon-button' onClick={ handleEditClick }>
                             <img src={ process.env.PUBLIC_URL + 'icons8-edit-16.png' } />
                         </button>
@@ -68,6 +70,7 @@ function Task({ id, taskTitle, tags, deadline, cardColor, status }) {
                             <img src={ process.env.PUBLIC_URL + 'icons8-delete-16.png' } />
                         </button>
                     </span>
+                    }
                 </div>
             </div>
             }

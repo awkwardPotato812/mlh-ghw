@@ -74,12 +74,17 @@ def delete_tasks(task_id):
 
 @app.route('/archived')
 def get_archived_tasks():
+    response = {
+        'archived': []
+    }
     try:
-        archvd__tasks = db.get_archived_tasks()
+        archvd_tasks = db.get_archived_tasks()
+        for task in archvd_tasks:
+            response['archived'].append(task)
     except sqlite3.Error as error:
         return abort(500, description="Internal Server Error")
     
-    return jsonify(archvd__tasks)
+    return jsonify(response)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
