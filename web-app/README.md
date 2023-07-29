@@ -2,6 +2,13 @@
 This repository contains implementation of a web-based task planner app/ *Kanban board* . This is based on the MLH Global Hack Week Workshop on building a hack planner. The focus of the workshop is to build a web based planner/to-do list using `Python`, `Flask` and `sqllite`. The UI is a `React` application that provides a Kanban view of the stored tasks  
 
 ## Versions
+## V4 
+- Updated backend for C(reate), R(etreive), U(pdate) and D(elete) support
+- Added add task and edit task forms at react layer
+- Added a page to view archived tasks
+- Added drag and drop functionality for moving tasks between different stages
+- Added support delete task from UI 
+
 ## V3
 - Created a React app for Front-end
 - Added a drawable/collapsible nav bar
